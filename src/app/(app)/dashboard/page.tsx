@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +13,9 @@ import { useToast } from '@/hooks/use-toast';
 import { MOCK_CURRENT_USER } from '@/lib/mock-data';
 import { submitStep } from './actions';
 import { cn } from '@/lib/utils';
-import type { DailyProgress } from '@/types';
+import type { DailyProgress, User } from '@/types';
+import { getUser } from '@/lib/db';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type SubmissionResult = {
   error?: string;
@@ -37,12 +39,25 @@ function getStepColor(steps: number | null) {
 
 export default function DashboardPage() {
   const { toast } = useToast();
-  const [userProgress, setUserProgress] = useState<DailyProgress[]>(MOCK_CURRENT_USER.progress);
+  const [user, setUser] = useState<User | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState<SubmissionResult | null>(null);
+  const [isFetchingUser, setIsFetchingUser] = useState(true);
 
+  useEffect(() => {
+    async function fetchUser() {
+      setIsFetchingUser(true);
+      // In a real app, you'd get the current user's ID from an auth session
+      const userData = await getUser(MOCK_CURRENT_USER.id);
+      setUser(userData);
+      setIsFetchingUser(false);
+    }
+    fetchUser();
+  }, []);
+
+  const userProgress = user?.progress ?? [];
   const daysCompleted = userProgress.filter(p => p.goalMet).length;
   const currentStreak = userProgress.reduce((acc, day) => (day.goalMet ? acc + 1 : 0), 0);
 
@@ -70,7 +85,7 @@ export default function DashboardPage() {
       return;
     }
 
-    setIsLoading(true);
+    setIsSubmitting(true);
     setSubmissionResult(null);
 
     try {
@@ -80,19 +95,34 @@ export default function DashboardPage() {
         toast({ variant: 'destructive', title: 'Submission Failed', description: result.error });
       } else {
         toast({ title: 'Submission Successful', description: `Verified ${result.stepCount?.toLocaleString()} steps.` });
-        
-        const today = new Date().getDate(); // Simplified for mock data
-        const updatedProgress = userProgress.map(p =>
-          p.day === today ? { ...p, steps: result.stepCount, goalMet: (result.stepCount || 0) >= 10000 } : p
-        );
-        setUserProgress(updatedProgress);
+        // Re-fetch user to get updated progress
+        const updatedUserData = await getUser(MOCK_CURRENT_USER.id);
+        setUser(updatedUserData);
+        setSelectedFile(null);
+        setPreviewUrl(null);
       }
     } catch (error) {
       toast({ variant: 'destructive', title: 'An unexpected error occurred.', description: 'Please try again.' });
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
+
+  if (isFetchingUser) {
+    return (
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <Card className="lg:col-span-1">
+                <CardHeader><Skeleton className="h-8 w-3/4" /></CardHeader>
+                <CardContent><Skeleton className="h-48 w-full" /></CardContent>
+                <CardFooter><Skeleton className="h-10 w-full" /></CardFooter>
+            </Card>
+            <Card className="lg:col-span-2">
+                <CardHeader><Skeleton className="h-8 w-1/2" /></CardHeader>
+                <CardContent><Skeleton className="h-48 w-full" /></CardContent>
+            </Card>
+        </div>
+    )
+  }
 
   return (
     <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -129,8 +159,8 @@ export default function DashboardPage() {
             )}
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full" disabled={isLoading || !selectedFile}>
-              {isLoading ? <Loader2 className="animate-spin mr-2" /> : <Upload className="mr-2" />}
+            <Button type="submit" className="w-full" disabled={isSubmitting || !selectedFile}>
+              {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : <Upload className="mr-2" />}
               Verify & Submit
             </Button>
           </CardFooter>

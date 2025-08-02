@@ -3,20 +3,12 @@ import { addDays, format } from 'date-fns';
 
 const CHALLENGE_START_DATE = new Date('2025-08-30T00:00:00');
 
-const generateUserProgress = (name: string): User['progress'] => {
+const generateUserProgress = (): User['progress'] => {
   return Array.from({ length: 30 }, (_, i) => {
     const day = i + 1;
     const date = addDays(CHALLENGE_START_DATE, i);
-    let steps = null;
-    let goalMet = false;
-
-    // Simulate progress for the first 20 days
-    if (day < 20) {
-      if (Math.random() > 0.2) { // 80% chance to have logged steps
-        steps = Math.floor(Math.random() * 8000) + 7000; // 7k to 15k steps
-        goalMet = steps >= 10000;
-      }
-    }
+    const steps = null;
+    const goalMet = false;
 
     return { day, date: format(date, 'MMM d, yyyy'), steps, goalMet };
   });
@@ -31,31 +23,7 @@ export const MOCK_USERS: User[] = userNames.map((name, index) => ({
   id: `${index + 1}`,
   name: name,
   avatar: `https://placehold.co/40x40.png`,
-  progress: generateUserProgress(name),
+  progress: generateUserProgress(),
 }));
 
 export const MOCK_CURRENT_USER = MOCK_USERS[0];
-
-export const getLeaderboardData = () => {
-  return MOCK_USERS.map(user => {
-    const totalSteps = user.progress.reduce((acc, day) => acc + (day.steps || 0), 0);
-    
-    let maxStreak = 0;
-    let currentStreak = 0;
-    for (const day of user.progress) {
-      if (day.goalMet) {
-        currentStreak++;
-      } else {
-        maxStreak = Math.max(maxStreak, currentStreak);
-        currentStreak = 0;
-      }
-    }
-    maxStreak = Math.max(maxStreak, currentStreak);
-    
-    const today = new Date().getDate(); // Simplified for mock data
-    const todaysProgress = user.progress.find(p => p.day === today);
-    const todaysSteps = todaysProgress?.steps ?? 0;
-
-    return { ...user, totalSteps, streak: maxStreak, todaysSteps };
-  }).sort((a, b) => b.totalSteps - a.totalSteps);
-};

@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { getLeaderboardData } from '@/lib/mock-data';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { Footprints } from 'lucide-react';
+import { getAllUsers } from '@/lib/db';
+import type { User } from '@/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const STEP_COLORS = {
   MOST_STEPS: 'bg-blue-500 hover:bg-blue-600',
@@ -26,8 +28,24 @@ function getStepColor(
 }
 
 export default function LeaderboardPage() {
-  const [leaderboardData] = useState(getLeaderboardData());
+  const [leaderboardData, setLeaderboardData] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const days = Array.from({ length: 30 }, (_, i) => i + 1);
+
+  useEffect(() => {
+    async function fetchLeaderboard() {
+      setIsLoading(true);
+      const users = await getAllUsers();
+      const sortedUsers = users.sort((a, b) => {
+        const totalStepsA = a.progress.reduce((acc, p) => acc + (p.steps || 0), 0);
+        const totalStepsB = b.progress.reduce((acc, p) => acc + (p.steps || 0), 0);
+        return totalStepsB - totalStepsA;
+      });
+      setLeaderboardData(sortedUsers);
+      setIsLoading(false);
+    }
+    fetchLeaderboard();
+  }, []);
 
   const maxStepsPerDay = useMemo(() => {
     const maxSteps: (number | null)[] = Array(30).fill(null);
@@ -45,6 +63,20 @@ export default function LeaderboardPage() {
     });
     return maxSteps;
   }, [leaderboardData, days]);
+
+  if (isLoading) {
+    return (
+        <Card>
+            <CardHeader>
+                <Skeleton className="h-8 w-1/2" />
+                <Skeleton className="h-4 w-3/4" />
+            </CardHeader>
+            <CardContent>
+                <Skeleton className="h-64 w-full" />
+            </CardContent>
+        </Card>
+    )
+  }
 
   return (
     <Card>

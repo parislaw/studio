@@ -3,7 +3,7 @@ export type DailyProgress = {
   date: string;
   steps: number | null;
   goalMet: boolean;
-  image?: string;
+  image?: string; // Storing as a data URI
 };
 
 export type User = {
