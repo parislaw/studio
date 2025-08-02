@@ -1,3 +1,4 @@
+
 export type DailyProgress = {
   day: number;
   date: string;
@@ -8,7 +9,8 @@ export type DailyProgress = {
 
 export type User = {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   avatar: string;
   progress: DailyProgress[];
   isAdmin?: boolean;

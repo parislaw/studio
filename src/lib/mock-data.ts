@@ -1,3 +1,4 @@
+
 import type { User } from '@/types';
 import { addDays, format } from 'date-fns';
 
@@ -15,13 +16,20 @@ const generateUserProgress = (): User['progress'] => {
 };
 
 const userNames = [
-  'Alice Johnson', 'Bob Williams', 'Charlie Brown', 'Diana Miller',
-  'Ethan Davis', 'Fiona Garcia', 'George Rodriguez', 'Hannah Wilson'
+  { firstName: 'Alice', lastName: 'Johnson' },
+  { firstName: 'Bob', lastName: 'Williams' },
+  { firstName: 'Charlie', lastName: 'Brown' },
+  { firstName: 'Diana', lastName: 'Miller' },
+  { firstName: 'Ethan', lastName: 'Davis' },
+  { firstName: 'Fiona', lastName: 'Garcia' },
+  { firstName: 'George', lastName: 'Rodriguez' },
+  { firstName: 'Hannah', lastName: 'Wilson' }
 ];
 
 export const MOCK_USERS: User[] = userNames.map((name, index) => ({
   id: `${index + 1}`,
-  name: name,
+  firstName: name.firstName,
+  lastName: name.lastName,
   avatar: `https://placehold.co/40x40.png`,
   progress: generateUserProgress(),
   // Make the first user an admin for demonstration

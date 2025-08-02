@@ -1,3 +1,4 @@
+
 "use client"
 
 import Link from "next/link"
@@ -84,10 +85,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-3">
               <Avatar>
                 <AvatarImage src="https://placehold.co/40x40.png" alt="User avatar" data-ai-hint="person avatar"/>
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarFallback>{MOCK_CURRENT_USER.firstName.charAt(0)}{MOCK_CURRENT_USER.lastName.charAt(0)}</AvatarFallback>
               </Avatar>
               <div className="flex-1 overflow-hidden">
-                <p className="text-sm font-medium truncate">{MOCK_CURRENT_USER.name}</p>
+                <p className="text-sm font-medium truncate">{MOCK_CURRENT_USER.firstName} {MOCK_CURRENT_USER.lastName}</p>
                 <p className="text-xs text-sidebar-foreground/70 truncate">user@example.com</p>
               </div>
               <Button variant="ghost" size="icon" className="shrink-0" asChild>

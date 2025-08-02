@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -98,10 +99,10 @@ export default function LeaderboardPage() {
               <React.Fragment key={user.id}>
                 <div className="sticky left-0 bg-card flex items-center gap-2 py-1 pl-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="person avatar" />
-                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                    <AvatarImage src={user.avatar} alt={`${user.firstName} ${user.lastName}`} data-ai-hint="person avatar" />
+                    <AvatarFallback>{user.firstName.charAt(0)}{user.lastName.charAt(0)}</AvatarFallback>
                   </Avatar>
-                  <span className="font-medium text-sm truncate">{user.name}</span>
+                  <span className="font-medium text-sm truncate">{user.firstName} {user.lastName}</span>
                 </div>
                 
                 <TooltipProvider delayDuration={100}>
@@ -121,7 +122,7 @@ export default function LeaderboardPage() {
                             </div>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p className="font-semibold">{user.name} - Day {day.day} ({day.date})</p>
+                            <p className="font-semibold">{user.firstName} {user.lastName} - Day {day.day} ({day.date})</p>
                             <div className="flex items-center gap-2 mt-1">
                                 <Footprints className="h-4 w-4 text-muted-foreground"/>
                                 {day.steps !== null ? (

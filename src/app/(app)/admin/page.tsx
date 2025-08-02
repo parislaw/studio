@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -137,11 +138,11 @@ export default function AdminPage() {
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-9 w-9">
-                        <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="person avatar" />
-                        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                        <AvatarImage src={user.avatar} alt={`${user.firstName} ${user.lastName}`} data-ai-hint="person avatar" />
+                        <AvatarFallback>{user.firstName.charAt(0)}{user.lastName.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <p>{user.name}</p>
+                        <p>{user.firstName} {user.lastName}</p>
                         <p className="text-xs text-muted-foreground">{user.isAdmin ? 'Admin' : 'Participant'}</p>
                       </div>
                     </div>
@@ -170,7 +171,7 @@ export default function AdminPage() {
          <DialogContent>
             <form onSubmit={onFormSubmit}>
               <DialogHeader>
-                <DialogTitle>Edit Steps for {selectedUser.name}</DialogTitle>
+                <DialogTitle>Edit Steps for {selectedUser.firstName} {selectedUser.lastName}</DialogTitle>
                 <DialogDescription>
                   Select a day and enter the new step count. This action will override the existing value.
                 </DialogDescription>
