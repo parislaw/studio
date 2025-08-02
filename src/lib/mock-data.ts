@@ -1,8 +1,12 @@
 import type { User } from '@/types';
+import { addDays, format } from 'date-fns';
+
+const CHALLENGE_START_DATE = new Date('2025-08-30T00:00:00');
 
 const generateUserProgress = (name: string): User['progress'] => {
   return Array.from({ length: 30 }, (_, i) => {
     const day = i + 1;
+    const date = addDays(CHALLENGE_START_DATE, i);
     let steps = null;
     let goalMet = false;
 
@@ -14,7 +18,7 @@ const generateUserProgress = (name: string): User['progress'] => {
       }
     }
 
-    return { day, steps, goalMet };
+    return { day, date: format(date, 'MMM d, yyyy'), steps, goalMet };
   });
 };
 

@@ -169,7 +169,7 @@ export default function DashboardPage() {
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Day {day.day}</p>
+                    <p className="font-semibold">Day {day.day} ({day.date})</p>
                     {day.steps !== null ? (
                       <p>{day.steps.toLocaleString()} steps</p>
                     ) : (

@@ -1,5 +1,6 @@
 export type DailyProgress = {
   day: number;
+  date: string;
   steps: number | null;
   goalMet: boolean;
   image?: string;

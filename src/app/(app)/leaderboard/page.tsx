@@ -1,13 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { getLeaderboardData } from '@/lib/mock-data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { Footprints } from 'lucide-react';
-import { useState, useMemo } from 'react';
 
 const STEP_COLORS = {
   MOST_STEPS: 'bg-blue-500 hover:bg-blue-600',
@@ -90,7 +89,7 @@ export default function LeaderboardPage() {
                             </div>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p className="font-semibold">{user.name} - Day {day.day}</p>
+                            <p className="font-semibold">{user.name} - Day {day.day} ({day.date})</p>
                             <div className="flex items-center gap-2 mt-1">
                                 <Footprints className="h-4 w-4 text-muted-foreground"/>
                                 {day.steps !== null ? (
