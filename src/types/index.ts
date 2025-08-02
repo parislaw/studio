@@ -1,0 +1,13 @@
+export type DailyProgress = {
+  day: number;
+  steps: number | null;
+  goalMet: boolean;
+  image?: string;
+};
+
+export type User = {
+  id: string;
+  name: string;
+  avatar: string;
+  progress: DailyProgress[];
+};
