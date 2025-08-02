@@ -23,6 +23,18 @@ type SubmissionResult = {
   explanation?: string;
 };
 
+const STEP_COLORS = {
+    GOAL_MET: 'bg-green-500',
+    GOAL_NOT_MET: 'bg-orange-400',
+    NO_DATA: 'bg-muted/50',
+};
+
+function getStepColor(steps: number | null) {
+    if (steps === null) return STEP_COLORS.NO_DATA;
+    if (steps >= 10000) return STEP_COLORS.GOAL_MET;
+    return STEP_COLORS.GOAL_NOT_MET;
+}
+
 export default function DashboardPage() {
   const { toast } = useToast();
   const [userProgress, setUserProgress] = useState<DailyProgress[]>(MOCK_CURRENT_USER.progress);
@@ -148,20 +160,12 @@ export default function DashboardPage() {
                   <TooltipTrigger asChild>
                     <div
                       className={cn(
-                        'aspect-square rounded-md flex items-center justify-center border',
-                        day.goalMet
-                          ? 'bg-accent/80 border-accent'
-                          : day.steps !== null
-                          ? 'bg-secondary'
-                          : 'bg-muted/50',
-                        'transition-all hover:scale-105 hover:shadow-md'
+                        'aspect-square rounded-md flex items-center justify-center border-transparent border',
+                        getStepColor(day.steps),
+                        'transition-all hover:scale-105 hover:shadow-md hover:border-primary'
                       )}
                     >
-                      {day.goalMet ? (
-                        <CheckCircle2 className="h-6 w-6 text-accent-foreground" />
-                      ) : (
-                        <span className="text-sm font-medium text-muted-foreground">{day.day}</span>
-                      )}
+                        <span className="text-sm font-medium text-white mix-blend-difference">{day.day}</span>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
