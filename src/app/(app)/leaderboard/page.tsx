@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { Flame, Award, TrendingUp } from 'lucide-react';
+import { Flame, Award, TrendingUp, Footprints } from 'lucide-react';
 
 export default function LeaderboardPage() {
   const leaderboardData = getLeaderboardData();
@@ -29,6 +29,7 @@ export default function LeaderboardPage() {
                 <TableRow>
                 <TableHead className="w-[50px] text-center">Rank</TableHead>
                 <TableHead>Participant</TableHead>
+                <TableHead className="text-right">Today's Steps</TableHead>
                 <TableHead className="text-right">Total Steps</TableHead>
                 <TableHead className="text-right">Best Streak</TableHead>
                 <TableHead className="w-[320px] hidden lg:table-cell pl-8">30-Day Progress</TableHead>
@@ -46,6 +47,12 @@ export default function LeaderboardPage() {
                         </Avatar>
                         <span className="font-medium">{user.name}</span>
                     </div>
+                    </TableCell>
+                    <TableCell className="text-right font-mono">
+                        <div className="flex items-center justify-end gap-2">
+                            <Footprints className="h-4 w-4 text-primary" />
+                            {user.todaysSteps.toLocaleString()}
+                        </div>
                     </TableCell>
                     <TableCell className="text-right font-mono">
                         <div className="flex items-center justify-end gap-2">

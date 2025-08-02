@@ -47,7 +47,11 @@ export const getLeaderboardData = () => {
       }
     }
     maxStreak = Math.max(maxStreak, currentStreak);
+    
+    const today = new Date().getDate(); // Simplified for mock data
+    const todaysProgress = user.progress.find(p => p.day === today);
+    const todaysSteps = todaysProgress?.steps ?? 0;
 
-    return { ...user, totalSteps, streak: maxStreak };
+    return { ...user, totalSteps, streak: maxStreak, todaysSteps };
   }).sort((a, b) => b.totalSteps - a.totalSteps);
 };
