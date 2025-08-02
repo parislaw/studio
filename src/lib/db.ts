@@ -1,5 +1,5 @@
 import { db } from './firebase';
-import { collection, getDocs, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, updateDoc, arrayUnion, setDoc } from 'firebase/firestore';
 import type { User, DailyProgress } from '@/types';
 import { MOCK_USERS } from './mock-data';
 
@@ -14,7 +14,8 @@ export async function seedDatabase() {
     console.log('Seeding database with initial data...');
     for (const user of MOCK_USERS) {
       const userDocRef = doc(db, 'users', user.id);
-      await updateDoc(userDocRef, { ...user }, { merge: true });
+      // Use setDoc to create the document with a specific ID
+      await setDoc(userDocRef, user);
     }
     console.log('Database seeded.');
   }
@@ -59,4 +60,26 @@ export async function addStepRecord(userId: string, newProgress: DailyProgress) 
       });
     }
   }
+}
+
+export async function adminUpdateUserSteps(userId: string, day: number, steps: number) {
+    const user = await getUser(userId);
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    const progressIndex = user.progress.findIndex(p => p.day === day);
+    if (progressIndex === -1) {
+        throw new Error("Day not found in user's progress");
+    }
+
+    const updatedProgress = [...user.progress];
+    updatedProgress[progressIndex] = {
+        ...updatedProgress[progressIndex],
+        steps: steps,
+        goalMet: steps >= 10000,
+    };
+
+    const userDocRef = doc(db, 'users', userId);
+    await updateDoc(userDocRef, { progress: updatedProgress });
 }

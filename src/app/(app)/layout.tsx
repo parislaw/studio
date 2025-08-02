@@ -6,6 +6,7 @@ import {
   Footprints,
   LayoutDashboard,
   LogOut,
+  Shield,
   Users,
 } from "lucide-react"
 
@@ -23,6 +24,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { MOCK_CURRENT_USER } from "@/lib/mock-data"
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -62,6 +64,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
+            {MOCK_CURRENT_USER.isAdmin && (
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === "/admin"}
+                  tooltip={{children: "Admin"}}
+                >
+                  <Link href="/admin">
+                    <Shield />
+                    <span>Admin</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )}
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
@@ -71,7 +87,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <AvatarFallback>U</AvatarFallback>
               </Avatar>
               <div className="flex-1 overflow-hidden">
-                <p className="text-sm font-medium truncate">Current User</p>
+                <p className="text-sm font-medium truncate">{MOCK_CURRENT_USER.name}</p>
                 <p className="text-xs text-sidebar-foreground/70 truncate">user@example.com</p>
               </div>
               <Button variant="ghost" size="icon" className="shrink-0" asChild>
@@ -89,6 +105,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <h1 className="text-lg font-semibold">
                     {pathname.startsWith('/dashboard') && 'Dashboard'}
                     {pathname.startsWith('/leaderboard') && 'Community Leaderboard'}
+                    {pathname.startsWith('/admin') && 'Admin Dashboard'}
                 </h1>
             </div>
         </header>

@@ -24,6 +24,8 @@ export const MOCK_USERS: User[] = userNames.map((name, index) => ({
   name: name,
   avatar: `https://placehold.co/40x40.png`,
   progress: generateUserProgress(),
+  // Make the first user an admin for demonstration
+  isAdmin: index === 0, 
 }));
 
 export const MOCK_CURRENT_USER = MOCK_USERS[0];

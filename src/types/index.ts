@@ -11,4 +11,5 @@ export type User = {
   name: string;
   avatar: string;
   progress: DailyProgress[];
+  isAdmin?: boolean;
 };
