@@ -6,34 +6,51 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { CheckCircle2, Footprints } from 'lucide-react';
-import { useState } from 'react';
+import { Footprints } from 'lucide-react';
+import { useState, useMemo } from 'react';
 
-const STEP_TIERS = {
-    '15000': 'bg-green-600 dark:bg-green-500',
-    '10000': 'bg-green-500 dark:bg-green-400',
-    '5000': 'bg-green-400 dark:bg-green-300',
-    '1': 'bg-green-300 dark:bg-green-200',
-    '0': 'bg-muted/50',
+const STEP_COLORS = {
+  MOST_STEPS: 'bg-blue-500 hover:bg-blue-600',
+  GOAL_MET: 'bg-green-500 hover:bg-green-600',
+  GOAL_NOT_MET: 'bg-orange-400 hover:bg-orange-500',
+  NO_DATA: 'bg-muted/50',
 };
 
-function getStepTier(steps: number | null) {
-  if (steps === null) return STEP_TIERS['0'];
-  if (steps >= 15000) return STEP_TIERS['15000'];
-  if (steps >= 10000) return STEP_TIERS['10000'];
-  if (steps >= 5000) return STEP_TIERS['5000'];
-  if (steps > 0) return STEP_TIERS['1'];
-  return STEP_TIERS['0'];
+function getStepColor(
+  steps: number | null,
+  isMax: boolean
+) {
+  if (steps === null) return STEP_COLORS.NO_DATA;
+  if (isMax) return STEP_COLORS.MOST_STEPS;
+  if (steps >= 10000) return STEP_COLORS.GOAL_MET;
+  return STEP_COLORS.GOAL_NOT_MET;
 }
 
 export default function LeaderboardPage() {
   const [leaderboardData] = useState(getLeaderboardData());
   const days = Array.from({ length: 30 }, (_, i) => i + 1);
 
+  const maxStepsPerDay = useMemo(() => {
+    const maxSteps: (number | null)[] = Array(30).fill(null);
+    days.forEach(day => {
+      let max = 0;
+      leaderboardData.forEach(user => {
+        const dayProgress = user.progress.find(p => p.day === day);
+        if (dayProgress && dayProgress.steps && dayProgress.steps > max) {
+          max = dayProgress.steps;
+        }
+      });
+      if (max > 0) {
+        maxSteps[day - 1] = max;
+      }
+    });
+    return maxSteps;
+  }, [leaderboardData, days]);
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Community Steaks</CardTitle>
+        <CardTitle>Community Streaks</CardTitle>
         <CardDescription>See everyone's 30-day step journey. Can you keep up the heat?</CardDescription>
       </CardHeader>
       <CardContent className="overflow-x-auto">
@@ -57,16 +74,19 @@ export default function LeaderboardPage() {
                 </div>
                 
                 <TooltipProvider delayDuration={100}>
-                    {user.progress.map((day) => (
+                    {user.progress.map((day) => {
+                       const maxForDay = maxStepsPerDay[day.day - 1];
+                       const isMax = !!(day.steps && maxForDay && day.steps === maxForDay && day.steps > 0);
+
+                       return (
                         <Tooltip key={`${user.id}-${day.day}`}>
                         <TooltipTrigger asChild>
                             <div
                                 className={cn(
                                     'aspect-square rounded-sm flex items-center justify-center border-transparent border transition-all hover:scale-110 hover:border-primary',
-                                    getStepTier(day.steps)
+                                    getStepColor(day.steps, isMax)
                                 )}
                             >
-                                {day.goalMet && <CheckCircle2 className="h-4 w-4 text-white/80" />}
                             </div>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -81,7 +101,8 @@ export default function LeaderboardPage() {
                             </div>
                         </TooltipContent>
                         </Tooltip>
-                    ))}
+                       )
+                    })}
                 </TooltipProvider>
 
               </React.Fragment>
