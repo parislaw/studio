@@ -22,7 +22,7 @@ export async function seedDatabase() {
 }
 
 export async function getAllUsers(): Promise<User[]> {
-  // await seedDatabase(); // Optional: seed data if db is empty
+  await seedDatabase(); // Optional: seed data if db is empty
   const usersCollectionRef = collection(db, 'users');
   const userSnapshot = await getDocs(usersCollectionRef);
   const users: User[] = [];
